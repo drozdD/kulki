@@ -30,47 +30,57 @@ export default class ShortestPath {
 
         var done = false;
         var l = 0
+        var fail;
 
         do {
+            fail = true
             if (l == 0) {
                 if (gameAr[sX - 1] != undefined) {
                     if (gameAr[sX - 1][sY] == 0) {
                         gameAr[sX - 1][sY] = 1
                         moveArr[sX - 1][sY] = sX.toString() + sY.toString()
+                        fail = false
                     } else if (gameAr[sX - 1][sY] == -3) {
                         //znalazło mete 
                         moveArr[sX - 1][sY] = sX.toString() + sY.toString()
                         done = true
+                        fail = false
                     }
                 }
                 if (gameAr[sX + 1] != undefined) {
                     if (gameAr[sX + 1][sY] == 0) {
                         gameAr[sX + 1][sY] = 1
                         moveArr[sX + 1][sY] = sX.toString() + sY.toString()
+                        fail = false
                     } else if (gameAr[sX + 1][sY] == -3) {
                         //znalazło mete 
                         moveArr[sX + 1][sY] = sX.toString() + sY.toString()
                         done = true
+                        fail = false
                     }
                 }
                 if (gameAr[sX][sY + 1] != undefined) {
                     if (gameAr[sX][sY + 1] == 0) {
                         gameAr[sX][sY + 1] = 1
                         moveArr[sX][sY + 1] = sX.toString() + sY.toString()
+                        fail = false
                     } else if (gameAr[sX][sY + 1] == -3) {
                         //znalazło mete 
                         moveArr[sX][sY + 1] = sX.toString() + sY.toString()
                         done = true
+                        fail = false
                     }
                 }
                 if (gameAr[sX][sY - 1] != undefined) {
                     if (gameAr[sX][sY - 1] == 0) {
                         gameAr[sX][sY - 1] = 1
                         moveArr[sX][sY - 1] = sX.toString() + sY.toString()
+                        fail = false
                     } else if (gameAr[sX][sY - 1] == -3) {
                         //znalazło mete 
                         moveArr[sX][sY - 1] = sX.toString() + sY.toString()
                         done = true
+                        fail = false
                     }
                 }
             } else {
@@ -81,8 +91,10 @@ export default class ShortestPath {
                                 if (gameAr[i - 1][j] == 0) {
                                     gameAr[i - 1][j] = l + 1
                                     moveArr[i - 1][j] = moveArr[i][j] + "_" + i + j
+                                    fail = false
                                 } else if (gameAr[i - 1][j] == -3) {
                                     moveArr[i - 1][j] = moveArr[i][j] + "_" + i + j
+                                    fail = false
                                     done = true
                                 }
                             }
@@ -90,32 +102,41 @@ export default class ShortestPath {
                                 if (gameAr[i + 1][j] == 0) {
                                     gameAr[i + 1][j] = l + 1
                                     moveArr[i + 1][j] = moveArr[i][j] + "_" + i + j
+                                    fail = false
                                 } else if (gameAr[i + 1][j] == -3) {
                                     moveArr[i + 1][j] = moveArr[i][j] + "_" + i + j
                                     done = true
+                                    fail = false
                                 }
                             }
                             if (gameAr[i][j + 1] != undefined) {
                                 if (gameAr[i][j + 1] == 0) {
                                     gameAr[i][j + 1] = l + 1
                                     moveArr[i][j + 1] = moveArr[i][j] + "_" + i + j
+                                    fail = false
                                 } else if (gameAr[i][j + 1] == -3) {
                                     moveArr[i][j + 1] = moveArr[i][j] + "_" + i + j
                                     done = true
+                                    fail = false
                                 }
                             }
                             if (gameAr[i][j - 1] != undefined) {
                                 if (gameAr[i][j - 1] == 0) {
                                     gameAr[i][j - 1] = l + 1
                                     moveArr[i][j - 1] = moveArr[i][j] + "_" + i + j
+                                    fail = false
                                 } else if (gameAr[i][j - 1] == -3) {
                                     moveArr[i][j - 1] = moveArr[i][j] + "_" + i + j
                                     done = true
+                                    fail = false
                                 }
                             }
                         }
                     }
                 }
+            }
+            if (fail) {
+                done = true
             }
             l++
         } while (done == false)
@@ -126,7 +147,11 @@ export default class ShortestPath {
         // console.log("MOVE ARR")
         // console.log(moveArr)
         console.log(moveArr[mX][mY])
+        if (fail == true) {
+            return "fail"
+        } else {
+            return moveArr[mX][mY]
+        }
 
-        return moveArr[mX][mY]
     }
 }

@@ -4,17 +4,20 @@ export default class Balls {
         var ball1 = [],
             ball2 = [],
             ball3 = [];
-        ball1[0] = Math.floor(Math.random() * (9 - 0))
-        ball1[1] = Math.floor(Math.random() * (9 - 0))
+        do {
+            ball1[0] = Math.floor(Math.random() * (9 - 0))
+            ball1[1] = Math.floor(Math.random() * (9 - 0))
+        } while (Playfield.gameArr[ball1[0]][ball1[1]] != 0)
+
         do {
             ball2[0] = Math.floor(Math.random() * (9 - 0))
             ball2[1] = Math.floor(Math.random() * (9 - 0))
-        } while (ball2[0] == ball1[0] && ball2[1] == ball1[1])
+        } while (ball2[0] == ball1[0] && ball2[1] == ball1[1] && Playfield.gameArr[ball2[0]][ball2[1]] != 0)
 
         do {
             ball3[0] = Math.floor(Math.random() * (9 - 0))
             ball3[1] = Math.floor(Math.random() * (9 - 0))
-        } while ((ball3[0] == ball1[0] && ball3[1] == ball1[1]) || (ball3[0] == ball2[0] && ball3[1] == ball2[1]))
+        } while ((ball3[0] == ball1[0] && ball3[1] == ball1[1]) || (ball3[0] == ball2[0] && ball3[1] == ball2[1]) && Playfield.gameArr[ball3[0]][ball3[1]] != 0)
 
         Playfield.gameArr[ball1[0]][ball1[1]] = Playfield.nextColors[0]
         Playfield.gameArr[ball2[0]][ball2[1]] = Playfield.nextColors[1]

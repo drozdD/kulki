@@ -4,6 +4,7 @@ export default class Playfield {
     public static gameArr: number[][];
     public static colors: String[] = ["", 'black', 'green', 'blue', 'yellow', 'magenta', 'purple', 'cyan'];
     public static nextColors: number[] = [];
+    private static fail: Boolean = false;
 
     static renderNewGameField() {
         var container = document.getElementById('container')
@@ -58,40 +59,45 @@ export default class Playfield {
                                         var s = i.toString() + j.toString();
                                         m = k.toString() + l.toString();
                                         var xd = ShortestPath.findShortestPath(s, m, Playfield.gameArr) as String
-                                        var path: Array<string> = xd.split("_")
-                                        for (var z = 0; z < path.length; z++) {
-                                            document.getElementById(path[z]).style.backgroundColor = "red"
-                                        }
-                                        document.getElementById(m).style.backgroundColor = "red"
+                                        if (xd != 'fail') {
+                                            Playfield.fail = false
+                                            var path: Array<string> = xd.split("_")
+                                            for (var z = 0; z < path.length; z++) {
+                                                document.getElementById(path[z]).style.backgroundColor = "red"
+                                            }
+                                            document.getElementById(m).style.backgroundColor = "red"
+                                        } else { Playfield.fail = true }
                                     }
 
                                     el.onclick = function () {
-                                        for (var p = 0; p < 9; p++) {
-                                            for (var o = 0; o < 9; o++) {
-                                                var id = p.toString() + o.toString()
-                                                document.getElementById(id).onmouseenter = null
-                                                if (document.getElementById(id).style.backgroundColor == "red") {
-                                                    document.getElementById(id).style.backgroundColor = "grey"
-                                                }
-                                            }
-                                        }
-
-                                        window.setTimeout(function () {
-                                            div.innerHTML = ""
-                                            // document.getElementById(m).innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="18" fill="${color}" /></svg>`
-                                            Playfield.gameArr[parseInt(m[0])][parseInt(m[1])] = Playfield.gameArr[parseInt(idS[0])][parseInt(idS[1])]
-                                            Playfield.gameArr[parseInt(idS[0])][parseInt(idS[1])] = 0
-                                            Balls.drawThreeBalls()
-                                            Playfield.renderGameField()
+                                        if (Playfield.fail == false) {
                                             for (var p = 0; p < 9; p++) {
                                                 for (var o = 0; o < 9; o++) {
-                                                    id = p.toString() + o.toString()
-                                                    if (document.getElementById(id).style.backgroundColor == "grey") {
-                                                        document.getElementById(id).style.backgroundColor = "white"
+                                                    var id = p.toString() + o.toString()
+                                                    document.getElementById(id).onmouseenter = null
+                                                    if (document.getElementById(id).style.backgroundColor == "red") {
+                                                        document.getElementById(id).style.backgroundColor = "grey"
                                                     }
                                                 }
                                             }
-                                        }, 500)
+
+                                            window.setTimeout(function () {
+                                                div.innerHTML = ""
+                                                // document.getElementById(m).innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="18" fill="${color}" /></svg>`
+                                                Playfield.gameArr[parseInt(m[0])][parseInt(m[1])] = Playfield.gameArr[parseInt(idS[0])][parseInt(idS[1])]
+                                                Playfield.gameArr[parseInt(idS[0])][parseInt(idS[1])] = 0
+                                                Balls.drawThreeBalls()
+                                                Playfield.renderGameField()
+                                                for (var p = 0; p < 9; p++) {
+                                                    for (var o = 0; o < 9; o++) {
+                                                        id = p.toString() + o.toString()
+                                                        if (document.getElementById(id).style.backgroundColor == "grey") {
+                                                            document.getElementById(id).style.backgroundColor = "white"
+                                                        }
+                                                    }
+                                                }
+                                            }, 500)
+                                        }
                                     }
                                 }
                             }
