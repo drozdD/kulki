@@ -1,7 +1,9 @@
+import ShortestPath from "./ShortestPath";
+import Balls from "./Balls";
 export default class Playfield {
     public static gameArr: number[][];
-    private static colors: String[] = ["", 'red', 'green', 'blue', 'yellow', 'magenta', 'purple', 'cyan'];
-    private static nextColors: number[] = [];
+    public static colors: String[] = ["", 'black', 'green', 'blue', 'yellow', 'magenta', 'purple', 'cyan'];
+    public static nextColors: number[] = [];
 
     static renderNewGameField() {
         var container = document.getElementById('container')
@@ -25,62 +27,79 @@ export default class Playfield {
             }
         }
 
-        Playfield.drawThreeBalls()
+        Balls.drawThreeBalls()
         Playfield.renderGameField()
     }
 
     static renderGameField() {
-        for (var i = 0; i < 9; i++) {
-            for (var j = 0; j < 9; j++) {
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
                 if (Playfield.gameArr[i][j] != 0) {
-                    let id = i.toString() + j.toString()
-                    let div = document.getElementById(id)
+                    let idS = i.toString() + j.toString()
+                    let div = document.getElementById(idS)
                     let num = Playfield.gameArr[i][j]
                     let color = Playfield.colors[num]
                     div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="18" fill="${color}" /></svg>`
-                    div.onmouseenter = function () {
-                        div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="23" fill="${color}" /></svg>`
-                    }
-                    div.onmouseleave = function () {
-                        div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="18" fill="${color}" /></svg>`
-                    }
                     div.onclick = function () {
+                        Balls.resetAllBallsSize()
                         div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="23" fill="${color}" /></svg>`
-                        div.onmouseleave = null
+                        for (let k = 0; k < 9; k++) {
+                            for (let l = 0; l < 9; l++) {
+                                var el = document.getElementById(k.toString() + l.toString())
+                                if (Playfield.gameArr[k][l] == 0) {
+                                    var m: string;
+                                    el.onmouseenter = function () {
+                                        for (var p = 0; p < 9; p++) {
+                                            for (var o = 0; o < 9; o++) {
+                                                var id = p.toString() + o.toString()
+                                                document.getElementById(id).style.backgroundColor = "white"
+                                            }
+                                        }
+                                        var s = i.toString() + j.toString();
+                                        m = k.toString() + l.toString();
+                                        var xd = ShortestPath.findShortestPath(s, m, Playfield.gameArr) as String
+                                        var path: Array<string> = xd.split("_")
+                                        for (var z = 0; z < path.length; z++) {
+                                            document.getElementById(path[z]).style.backgroundColor = "red"
+                                        }
+                                        document.getElementById(m).style.backgroundColor = "red"
+                                    }
+
+                                    el.onclick = function () {
+                                        for (var p = 0; p < 9; p++) {
+                                            for (var o = 0; o < 9; o++) {
+                                                var id = p.toString() + o.toString()
+                                                document.getElementById(id).onmouseenter = null
+                                                if (document.getElementById(id).style.backgroundColor == "red") {
+                                                    document.getElementById(id).style.backgroundColor = "grey"
+                                                }
+                                            }
+                                        }
+
+                                        window.setTimeout(function () {
+                                            div.innerHTML = ""
+                                            // document.getElementById(m).innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="18" fill="${color}" /></svg>`
+                                            Playfield.gameArr[parseInt(m[0])][parseInt(m[1])] = Playfield.gameArr[parseInt(idS[0])][parseInt(idS[1])]
+                                            Playfield.gameArr[parseInt(idS[0])][parseInt(idS[1])] = 0
+                                            Balls.drawThreeBalls()
+                                            Playfield.renderGameField()
+                                            for (var p = 0; p < 9; p++) {
+                                                for (var o = 0; o < 9; o++) {
+                                                    id = p.toString() + o.toString()
+                                                    if (document.getElementById(id).style.backgroundColor == "grey") {
+                                                        document.getElementById(id).style.backgroundColor = "white"
+                                                    }
+                                                }
+                                            }
+                                        }, 500)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    static drawThreeBalls() {
-        var ball1 = [],
-            ball2 = [],
-            ball3 = [];
-        ball1[0] = Math.floor(Math.random() * (9 - 0))
-        ball1[1] = Math.floor(Math.random() * (9 - 0))
-        do {
-            ball2[0] = Math.floor(Math.random() * (9 - 0))
-            ball2[1] = Math.floor(Math.random() * (9 - 0))
-        } while (ball2[0] == ball1[0] && ball2[1] == ball1[1])
-
-        do {
-            ball3[0] = Math.floor(Math.random() * (9 - 0))
-            ball3[1] = Math.floor(Math.random() * (9 - 0))
-        } while ((ball3[0] == ball1[0] && ball3[1] == ball1[1]) || (ball3[0] == ball2[0] && ball3[1] == ball2[1]))
-
-        Playfield.gameArr[ball1[0]][ball1[1]] = Playfield.nextColors[0]
-        Playfield.gameArr[ball2[0]][ball2[1]] = Playfield.nextColors[1]
-        Playfield.gameArr[ball3[0]][ball3[1]] = Playfield.nextColors[2]
-
-        Playfield.nextColors[0] = Math.floor(Math.random() * 7) + 1;
-        Playfield.nextColors[1] = Math.floor(Math.random() * 7) + 1;
-        Playfield.nextColors[2] = Math.floor(Math.random() * 7) + 1;
-
-        var colorInfo = document.getElementById('colorInfo')
-        colorInfo.innerHTML = colorInfo.innerHTML + `<br><svg xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="${Playfield.colors[Playfield.nextColors[0]]}" /></svg><svg xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="${Playfield.colors[Playfield.nextColors[1]]}" /></svg><svg xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="${Playfield.colors[Playfield.nextColors[2]]}" /></svg>`
-
-        console.log(ball1, ball2, ball3)
-        console.log(Playfield.gameArr)
-    }
 }
