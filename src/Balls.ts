@@ -8,19 +8,16 @@ export default class Balls {
             ball1[0] = Math.floor(Math.random() * (9 - 0))
             ball1[1] = Math.floor(Math.random() * (9 - 0))
         } while (Playfield.gameArr[ball1[0]][ball1[1]] != 0)
-
+        Playfield.gameArr[ball1[0]][ball1[1]] = Playfield.nextColors[0]
         do {
             ball2[0] = Math.floor(Math.random() * (9 - 0))
             ball2[1] = Math.floor(Math.random() * (9 - 0))
-        } while (ball2[0] == ball1[0] && ball2[1] == ball1[1] && Playfield.gameArr[ball2[0]][ball2[1]] != 0)
-
+        } while (Playfield.gameArr[ball2[0]][ball2[1]] != 0)
+        Playfield.gameArr[ball2[0]][ball2[1]] = Playfield.nextColors[1]
         do {
             ball3[0] = Math.floor(Math.random() * (9 - 0))
             ball3[1] = Math.floor(Math.random() * (9 - 0))
-        } while ((ball3[0] == ball1[0] && ball3[1] == ball1[1]) || (ball3[0] == ball2[0] && ball3[1] == ball2[1]) && Playfield.gameArr[ball3[0]][ball3[1]] != 0)
-
-        Playfield.gameArr[ball1[0]][ball1[1]] = Playfield.nextColors[0]
-        Playfield.gameArr[ball2[0]][ball2[1]] = Playfield.nextColors[1]
+        } while (Playfield.gameArr[ball3[0]][ball3[1]] != 0)
         Playfield.gameArr[ball3[0]][ball3[1]] = Playfield.nextColors[2]
 
         Playfield.nextColors[0] = Math.floor(Math.random() * 7) + 1;

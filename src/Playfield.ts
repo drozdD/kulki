@@ -6,6 +6,7 @@ export default class Playfield {
     public static nextColors: number[] = [];
     private static fail: Boolean = false;
 
+
     static renderNewGameField() {
         var container = document.getElementById('container')
         Playfield.nextColors[0] = Math.floor(Math.random() * 7) + 1;
@@ -14,7 +15,7 @@ export default class Playfield {
         Playfield.gameArr = []
 
         var pointsInfo = document.getElementById('pointsInfo')
-        pointsInfo.innerHTML = pointsInfo.innerHTML + " 0"
+        // pointsInfo.innerHTML = pointsInfo.innerHTML + " 0"
         for (var i = 0; i < 9; i++) {
             Playfield.gameArr[i] = [];
             for (var j = 0; j < 9; j++) {
@@ -30,6 +31,118 @@ export default class Playfield {
 
         Balls.drawThreeBalls()
         Playfield.renderGameField()
+    }
+
+    static checkWin() {
+        var toSpike = []
+        //w poziomie
+        for (var i = 0; i < 9; i++) {
+            //rzędy
+            var spikeBall = -1
+            var spike: string[] = []
+            for (var j = 0; j < 9; j++) {
+                if (spikeBall == Playfield.gameArr[i][j] && spikeBall != 0) {
+                    spike.push(i.toString() + j.toString())
+                    if (spike.length >= 5) {
+                        for (var x = 0; x < spike.length; x++) {
+                            toSpike.push(spike[x])
+                        }
+                    }
+                } else {
+                    spikeBall = Playfield.gameArr[i][j]
+                    spike = [i.toString() + j.toString()]
+                }
+            }
+        }
+
+        for (var i = 0; i < 9; i++) {
+            //kolumny
+            var spikeBall = -1
+            var spike: string[] = []
+            for (var j = 0; j < 9; j++) {
+                if (spikeBall == Playfield.gameArr[j][i] && spikeBall != 0) {
+                    spike.push(j.toString() + i.toString())
+                    if (spike.length >= 5) {
+                        for (var x = 0; x < spike.length; x++) {
+                            toSpike.push(spike[x])
+                        }
+                    }
+                } else {
+                    spikeBall = Playfield.gameArr[j][i]
+                    spike = [j.toString() + i.toString()]
+                }
+            }
+        }
+
+        //ukos
+        var spike: string[] = []
+        for (var i = 0; i < 9; i++) {
+            for (var j = 0; j < 9; j++) {
+                if (Playfield.gameArr[i][j] != 0) {
+                    spikeBall = Playfield.gameArr[i][j]
+                    spike = [i.toString() + j.toString()]
+                    var k = i
+                    var l = j
+
+                    try {
+                        while (Playfield.gameArr[k + 1][l + 1] == spikeBall) {
+                            k++
+                            l++
+                            spike.push(k.toString() + l.toString())
+                        }
+                    } catch (e) { }
+
+
+                    if (spike.length >= 5) {
+                        for (var x = 0; x < spike.length; x++) {
+                            toSpike.push(spike[x])
+                        }
+                    }
+
+                    spike = [i.toString() + j.toString()]
+                    var k = i
+                    var l = j
+
+                    try {
+                        while (Playfield.gameArr[k + 1][l - 1] == spikeBall) {
+                            k++
+                            l--
+                            spike.push(k.toString() + l.toString())
+                        }
+                    } catch (e) { }
+
+                    if (spike.length >= 5) {
+                        for (var x = 0; x < spike.length; x++) {
+                            toSpike.push(spike[x])
+                        }
+                    }
+                }
+            }
+        }
+
+        for (var x = 0; x < toSpike.length; x++) {
+            var z = parseInt(toSpike[x][0])
+            var y = parseInt(toSpike[x][1])
+            Playfield.gameArr[z][y] = -10
+            document.getElementById(toSpike[x]).innerHTML = ""
+        }
+
+        var points = 0
+        for (var i = 0; i < 9; i++) {
+            for (var j = 0; j < 9; j++) {
+                if (Playfield.gameArr[i][j] == -10) {
+                    points++
+                    Playfield.gameArr[i][j] = 0
+                }
+            }
+        }
+
+        var nowPoints = parseInt(document.getElementById("points").innerHTML)
+        points = points + nowPoints
+        document.getElementById("points").innerHTML = points.toString()
+
+        console.log("====================checkwin=======================")
+        console.log(toSpike)
     }
 
     static renderGameField() {
@@ -71,10 +184,13 @@ export default class Playfield {
 
                                     el.onclick = function () {
                                         if (Playfield.fail == false) {
+                                            div.innerHTML = ""
+                                            document.getElementById(m).innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="18" fill="${color}" /></svg>`
                                             for (var p = 0; p < 9; p++) {
                                                 for (var o = 0; o < 9; o++) {
                                                     var id = p.toString() + o.toString()
                                                     document.getElementById(id).onmouseenter = null
+                                                    document.getElementById(id).onclick = null
                                                     if (document.getElementById(id).style.backgroundColor == "red") {
                                                         document.getElementById(id).style.backgroundColor = "grey"
                                                     }
@@ -82,12 +198,9 @@ export default class Playfield {
                                             }
 
                                             window.setTimeout(function () {
-                                                div.innerHTML = ""
-                                                // document.getElementById(m).innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="18" fill="${color}" /></svg>`
                                                 Playfield.gameArr[parseInt(m[0])][parseInt(m[1])] = Playfield.gameArr[parseInt(idS[0])][parseInt(idS[1])]
                                                 Playfield.gameArr[parseInt(idS[0])][parseInt(idS[1])] = 0
-                                                Balls.drawThreeBalls()
-                                                Playfield.renderGameField()
+                                                Playfield.checkWin()
                                                 for (var p = 0; p < 9; p++) {
                                                     for (var o = 0; o < 9; o++) {
                                                         id = p.toString() + o.toString()
@@ -96,6 +209,8 @@ export default class Playfield {
                                                         }
                                                     }
                                                 }
+                                                Balls.drawThreeBalls()
+                                                Playfield.renderGameField()
                                             }, 500)
                                         }
                                     }
